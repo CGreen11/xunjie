@@ -1,5 +1,5 @@
 # xunjie
-通过读取XLS自动点击迅捷文字转语音(http://rj.xuechewuyou.com/voice2/)生成语音文件，读取XLS名称列作为内容，编号列作为文件名，核心模拟点击逻辑来源于KeymouseGo(https://tslow.cn)
+通过读取XLS自动点击迅捷文字转语音(http://rj.xuechewuyou.com/voice2)生成语音文件，读取XLS名称列作为内容，编号列作为文件名，核心模拟点击逻辑来源于KeymouseGo(https://tslow.cn)
 
 注意事项：
 1、每次要手动打开应用，打开后对窗口的位置和宽高不要有任何更改；
