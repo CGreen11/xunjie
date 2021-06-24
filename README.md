@@ -1,4 +1,4 @@
-# xunjie
+# WINDOWS读取EXCEL批量模拟点击迅捷文字转语音生成语音文件
 通过读取XLS自动点击迅捷文字转语音(http://rj.xuechewuyou.com/voice2)生成语音文件，读取XLS名称列作为内容，编号列作为文件名，核心模拟点击逻辑来源于KeymouseGo(https://tslow.cn)
 
 注意事项：
