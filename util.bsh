@@ -1,0 +1,150 @@
+import java.util.ArrayList;
+import java.util.LinkedList;  
+import java.util.List; 
+import java.util.Date; 
+import java.lang.Math;
+import java.io.File;
+import java.text.SimpleDateFormat;
+
+String[] strList = new String[]{"a","b","C","D","1","@","/",".","aa","111"};
+String chars = "0123456789QWERTYUIOPASDFGHJKLZXCVBNMabcdefghijklmnopqrstuvwxyz!~@#$%^&*()_+-=`[]{};':,.<>/?|";
+/**
+     * 日期格式（yyyy-MM-dd）
+     */
+    String FORMAT_DATE = "yyyy-MM-dd";
+    /**
+     * 日期格式（HH:mm:ss）
+     */
+    String FORMAT_TIME = "HH:mm:ss";
+    /**
+     * 日期格式（yyyy-MM-dd HH:mm）
+     */
+    String FORMAT_DATE_TIME = "yyyy-MM-dd HH:mm";
+    /**
+     * 日期格式（yyyy-MM-dd HH:mm:ss）
+     */
+    String FORMAT_DATE_SECOND = "yyyy-MM-dd HH:mm:ss";
+    /**
+     * 日期格式（yyyy-MM-dd HH:mm:ss.SSS）
+     */
+    String FORMAT_DATE_MSEC = "yyyy-MM-dd HH:mm:ss.SSS";
+    /**
+     * 日期格式（yyyy-MM-dd E）
+     */
+    String FORMAT_DATE_WEEK = "yyyy-MM-dd E";
+    /**
+     * 日期格式（yyyy-MM-dd E HH:mm）
+     */
+    String FORMAT_DATE_WEEK_TIME = "yyyy-MM-dd E HH:mm";
+
+
+String getNow(String dateFormat){
+	if(isStrEmpty(dateFormat)) dateFormat = FORMAT_DATE_SECOND;
+  	Date date=new Date();
+  	SimpleDateFormat format=new SimpleDateFormat(dateFormat);  
+	return format.format(date);
+}
+/**
+ * 修改文件名，不更改后缀，oldPath：文件的绝对路径， newName：新文件名
+*/  
+boolean chang_name(String oldPath, String newName){
+	//System.out.println("oldPath="+ oldPath+", newName="+newName); 
+	boolean isSuccess;
+	if(isStrEmpty(newName)) return isSuccess;
+	File  file = new File(oldPath);   //指定文件名及路径       
+    String  filename = file.getAbsolutePath();   
+	String fParent = file.getParent();    
+	//System.out.println("filename="+ filename+", fParent="+fParent); 
+    if(file.exists() && filename.indexOf(".")>=0){       
+        String fName   =   filename.substring(0,filename.lastIndexOf("."));   
+		String endStr =  filename.substring(filename.lastIndexOf(".")); 
+		//System.out.println("fName="+ fName+", endStr="+endStr); 
+		isSuccess = file.renameTo(new File(fParent + "\\"+ newName + endStr)); 
+     }       
+     return  isSuccess;  
+}
+
+//文件是否存在
+boolean isFileExit(String path){
+	if(isStrEmpty(path)) return false;
+	return new File(path).exists();
+}
+
+/**
+*获取min~max-1之间的随机数 max大于0
+**/
+int fun_random(int min, int max){
+	if(max < 1){
+		max = 1;
+	}
+	if(min >= max){
+		min = 0;
+	}
+	return (int)(Math.random() * (max-min) + min);
+}
+
+/**
+*获取0~max-1之间的随机数  max大于0
+**/
+int fun_random(int max){
+	return fun_random(0, max);
+}
+
+/**
+*获取随机大写字母
+**/
+String get_random_cap_us(){
+	return (char)(int)(Math.random()*26+65)+"";
+}
+
+/**
+*获取随机小写字母
+**/
+String get_random_low_us(){
+	return (char)(int)(Math.random()*26+97)+"";
+}
+
+/**
+*获取随机数字
+**/
+String get_random_num(){
+	return fun_random(10)+"";
+}
+
+/**
+*获取随机字符串 strLength以内
+**/
+String get_random_str(String str, int strLength){
+	if(isStrEmpty(str)){
+		return "";
+	}
+	if(strLength<1){
+		strLength = 1;
+	}
+	StringBuffer value = new StringBuffer();
+	for (int i = 0; i < strLength; i++) {
+		value.append(chars.charAt((int)(Math.random() * str.length())));
+	}
+	return value.toString();
+}
+
+/**
+*获取随机字符串，参数为绝对路径、关键字
+**/
+String get_random_str_by_xls(String path, String key){
+	if(isStrEmpty(path) || isStrEmpty(key)){
+		return "";
+	}
+	LinkedList pdList = ar.getParameterDataList(path);
+	return pdList.get(fun_random(pdList.size())).getFrom(key);
+}
+/**
+*字符串判空
+**/
+boolean isStrEmpty(String str){
+	if(str == null || str.equals("")){
+		return true;
+	}
+	return false;
+}
+
