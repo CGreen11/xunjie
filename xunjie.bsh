@@ -1,0 +1,55 @@
+/**
+注意事项：
+	1、每次要手动打开应用，打开后对窗口的位置和宽高不要有任何更改；
+	2、应用设置，音量：10，语速：6，保存路径与下方定义的语音保存文件夹一致；
+	3、要保证数据源没有重名，且要处理名称中的"/"等特殊符号，以免更改文件名失败，应用生成的文件名存在误差时导致更改文件名失败，可手动更改；
+	4、重复操作时需重新打开应用，以免应用本身创建重复数据源时添加诸如“（2）、（3）”等副本后缀导致更改文件名失败
+*/
+
+//导入方法
+source("F:\\chenguilin\\worksapce\\autoRunner_workspace\\test\\util.bsh");
+String excelPath = "F:\\chenguilin\\worksapce\\autoRunner_workspace\\0.xls";//数据源
+String audioSaveFolder = "F:\\chenguilin\\worksapce\\autoRunner_workspace\\audio\\";//语音保存文件夹
+String suffixStr = "-迅捷文字转语音.mp3";//语音文件后缀
+int maxLen = 3;//最大读取数
+//
+////读取数据源
+String [] medicineNumberList = ar.getExcelColumn(excelPath, 0);
+String [] medicineNameList = ar.getExcelColumn(excelPath, 1);
+int len = medicineNameList.length > maxLen ? maxLen : medicineNameList.length;
+int loseCount = 0;
+//跳过表头
+for(int i=1; i<len; i++){
+	String medicineName = medicineNameList[i];
+	if(isStrEmpty(medicineName)) continue;
+	//选中输入
+	ar.window("Chrome_WidgetWin_1_迅捷文字转语音").clickControl("Chrome_WidgetWin_1_迅捷文字转语音", 795, 346, "left");
+	//呼出清空按钮
+	ar.window("Chrome_WidgetWin_1_迅捷文字转语音").pressString("Chrome_WidgetWin_1_迅捷文字转语音","下一条："+i, 795, 346); 
+	//清空
+	ar.window("Chrome_WidgetWin_1_迅捷文字转语音").clickControl("Chrome_WidgetWin_1_迅捷文字转语音", 280, 480, "left");
+	//输入
+	ar.window("Chrome_WidgetWin_1_迅捷文字转语音").pressString("Chrome_WidgetWin_1_迅捷文字转语音", medicineName, 795, 346); 
+	//转换
+	ar.window("Chrome_WidgetWin_1_迅捷文字转语音").clickControl("Chrome_WidgetWin_1_迅捷文字转语音", 900, 650, "left");
+	//关闭一号弹窗
+	ar.window("Chrome_WidgetWin_1_迅捷文字转语音").clickControl("Chrome_WidgetWin_1_迅捷文字转语音", 710, 230, "left");
+	//关闭二号弹窗
+	ar.window("Chrome_WidgetWin_1_迅捷文字转语音").clickControl("Chrome_WidgetWin_1_迅捷文字转语音", 710, 210, "left");
+	//试听
+	//ar.window("Chrome_WidgetWin_1_迅捷文字转语音").clickControl("Chrome_WidgetWin_1_迅捷文字转语音", 900, 600, "left");
+	String filePath = audioSaveFolder+ medicineName+ suffixStr;
+	//更改文件名
+	String newName = "000"+ medicineNumberList[i]; 
+	newName = newName.substring(newName.length() - 3);
+	if(!isFileExit(filePath)){
+ 		System.out.println("文件不存在="+ filePath+", newName = "+ newName+", loseCount = "+ (++loseCount));
+	}else{
+		System.out.println(medicineName+ "="+ chang_name(audioSaveFolder+ medicineName+ suffixStr, newName)+", newName = "+ newName); 
+		//休眠1.5秒
+		//ar.sleep(1500);
+	}
+}
+
+
+
