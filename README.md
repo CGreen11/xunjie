@@ -11,5 +11,6 @@
 
 # WINDOWS读取EXCEL批量模拟点击迅捷文字转语音生成语音文件（AutoRunner版本）
 
-最早基于AutoRunner测试软件实现模拟点击迅捷生成文件并改名，过了一段时间准备用才发现AutoRunner要收费，之后发现通过搜索python 模拟点击发现KeymouseGo有实例，然后才进行了再次复刻
+使用：运行xunjie.bsh，调整相关参数、路径；
+备注：最早基于AutoRunner测试软件实现模拟点击迅捷生成文件并改名，过了一段时间准备用才发现AutoRunner要收费，之后发现通过搜索python 模拟点击发现KeymouseGo有实例，然后才进行了再次复刻
 ，但还是把AutoRunner版本上传备份，可惜了。
