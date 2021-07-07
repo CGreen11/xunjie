@@ -9,6 +9,10 @@
 5、根据xls文件中列名包含“名称”作为语音文字，列名包含“编号”作为文件保存重命名并且自动前缀补0至3位，如001.mp3、123.mp3；
 6、不同屏幕有不同分辨率，可通过KeymouseGo生成不同节点的录制脚本
 
+# 后记：
+迅捷现在不愿意被白嫖，加上了声音水印，本着白嫖第一、科技第二的原则，增加音频剪切。后续要是像风云那样不充钱限制生成就没法了。
+注意：音频剪切 from pydub import AudioSegment，使用中会产生Error,见：https://york1996.blog.csdn.net/article/details/103649217 ， https://blog.csdn.net/zongza/article/details/85345223 ，后一个教程不知道有没有用，我先用的后一个教程解决了一部分问题，又用了第一个教程。
+
 # WINDOWS读取EXCEL批量模拟点击迅捷文字转语音生成语音文件（AutoRunner版本）
 
 使用：运行xunjie.bsh，调整相关参数、路径；
