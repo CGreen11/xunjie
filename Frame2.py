@@ -12,11 +12,28 @@ import xlrd
 import wx
 import pyWinhook
 import shutil
+from pydub import AudioSegment
 
 wx.NO_3D = 0
 HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12']
-
 failed_name_list = []
+# 1秒=1000毫秒
+SECOND = 1000
+
+
+# 音频剪辑，剪去后缀 剔除的后缀的时间长度
+def chunk_suffix_audio(audio_path, suffix_second=2.8, audio_type="mp3", target_path=None):
+    if not (audio_path and suffix_second > 0 and audio_type):
+        return False
+    if not target_path:
+        target_path = audio_path
+    # 导入音乐
+    input_music = AudioSegment.from_file(audio_path, audio_type)
+    # print("audio_path=%s, len=%s" % (audio_path, len(input_music)))
+    # 裁剪
+    output_music = input_music[:len(input_music) - suffix_second * SECOND]
+    # 导出音乐
+    output_music.export(target_path)
 
 
 # 重命名，多个备用方案
@@ -73,7 +90,7 @@ class Frame2():
         '''
         self.label_header_txt = wx.StaticText(bkg, label='前期txt', name='label_header_txt', style=0)
         self.text_header_txt = wx.TextCtrl(bkg,
-                                           value="")
+                                           value="F:/chenguilin/worksapce/pycharm_workspace/volume_header.txt")
         self.headerButton = wx.Button(bkg, label='前期')
         self.headerButton.Bind(wx.EVT_BUTTON, self.header)
         '''
@@ -81,7 +98,7 @@ class Frame2():
         '''
         self.label_footer_txt = wx.StaticText(bkg, label='后期txt', name='label_footer_txt', style=0)
         self.text_footer_txt = wx.TextCtrl(bkg,
-                                           value="")
+                                           value="F:/chenguilin/worksapce/pycharm_workspace/volume_footer.txt")
         self.footerButton = wx.Button(bkg, label='后期')
         self.footerButton.Bind(wx.EVT_BUTTON, self.footer)
         '''
@@ -89,19 +106,19 @@ class Frame2():
         '''
         self.label_reset_txt = wx.StaticText(bkg, label='收尾txt', name='label_reset_txt', style=0)
         self.text_reset_txt = wx.TextCtrl(bkg,
-                                          value="")
+                                          value="F:/chenguilin/worksapce/pycharm_workspace/volume_reset.txt")
         self.resetButton = wx.Button(bkg, label='收尾')
         self.resetButton.Bind(wx.EVT_BUTTON, self.reset)
         '''
         xls路径
         '''
         self.label_xls = wx.StaticText(bkg, label='.xls读取路径', name='label_xls_path', style=0)
-        self.text_xls = wx.TextCtrl(bkg, value="")
+        self.text_xls = wx.TextCtrl(bkg, value="F:/chenguilin/worksapce/autoRunner_workspace/1.xls")
         '''
         音频保存路径
         '''
         self.label_audio = wx.StaticText(bkg, label='.mp3保存文件夹', name='label_audio_path', style=0)
-        self.text_audio = wx.TextCtrl(bkg, value="")
+        self.text_audio = wx.TextCtrl(bkg, value="F:/chenguilin/worksapce/autoRunner_workspace/audio/")
         # 重置
         self.resetAudioFolderButton = wx.Button(bkg, label='重置路径')
         self.resetAudioFolderButton.Bind(wx.EVT_BUTTON, self.reset_audio_folder)
@@ -124,12 +141,10 @@ class Frame2():
         # 读取起始索引
         self.label_start_index = wx.StaticText(bkg, label='读取起始索引', name='label_start_index', style=0)
         self.spin_start_index = wx.SpinCtrl(bkg, initial=1, max=1000, min=1, style=0)
-        self.spin_start_index.SetValue(1)
         self.spin_start_index.SetFocus()
         # 读取条数，即最多从excel读取上限
         self.label_count = wx.StaticText(bkg, label='读取总数', name='label_count', style=0)
-        self.spin_count = wx.SpinCtrl(bkg, initial=1, max=1000, min=1, style=0)
-        self.spin_count.SetValue(1)
+        self.spin_count = wx.SpinCtrl(bkg, initial=200, max=1000, min=1, style=0)
         '''
         各种控制--列表
         '''
@@ -473,6 +488,18 @@ class Frame2():
         pass
 
 
+# 查找、重命名
+def find_rename_file(dir_path, file_rename, file_src_name):
+    for root, dirs, files in os.walk(dir_path):
+        print(files)
+        for file in files:
+            if file_src_name in file:
+                if rename_file(file_rename, dir_path + file):
+                    return True
+                else:
+                    return False
+
+
 class RunScriptClass(threading.Thread):
 
     def __init__(self, frame: Frame2, event: threading.Event):
@@ -493,6 +520,7 @@ class RunScriptClass(threading.Thread):
         script_path_reset = self.frame.get_reset_txt_path()
         audio_suffix = "-迅捷文字转语音"
         print("xls_path=%s, \naudio_path=%s, \nmax_count=%s " % (xls_path, audio_path, max_count))
+        self.frame.append_log_lines("xls_path=%s, \naudio_path=%s, \nmax_count=%s " % (xls_path, audio_path, max_count))
         # 前期
         content_header = self.frame.get_script_by_path(script_path_header)
         # 后期
@@ -528,6 +556,7 @@ class RunScriptClass(threading.Thread):
         self.frame.running = True
         #
         try:
+            failed_name_list = []
             self.frame.append_log_lines("开始")
             self.read_excel_run_script(xls_path, content_header, content_footer, content_reset, audio_path,
                                        audio_suffix, start_index, max_count)
@@ -598,20 +627,29 @@ class RunScriptClass(threading.Thread):
             time.sleep(0.6)
             # 迅捷先取前5位再剔除符号
             change_name = strinfo.sub('', name[0:5])
+            # # 风云先剔除符号再取前4位
+            # change_name = strinfo.sub('', name)[0:4]
             # 备用源文件重命名
-            src_file = audio_folder + change_name + audio_suffix + ".mp3"
-            src_file2 = audio_folder + change_name + audio_suffix + "(2).mp3"
-            src_file3 = audio_folder + change_name + audio_suffix + "(3).mp3"
-            src_file4 = audio_folder + change_name + audio_suffix + "(4).mp3"
-            src_file5 = audio_folder + change_name + audio_suffix + "(5).mp3"
+            # src_file = audio_folder + change_name + audio_suffix + ".mp3"
+            # src_file2 = audio_folder + change_name + audio_suffix + "(2).mp3"
+            # src_file3 = audio_folder + change_name + audio_suffix + "(3).mp3"
+            # src_file4 = audio_folder + change_name + audio_suffix + "(4).mp3"
+            # src_file5 = audio_folder + change_name + audio_suffix + "(5).mp3"
             # 重命名预期文件名
             dstFile = audio_folder + ("000" + str(int(number)))[-3:] + ".mp3"
-            if not rename_file(dstFile, src_file, src_file2, src_file3, src_file4, src_file5):
+            # if not rename_file(dstFile, src_file, src_file2, src_file3, src_file4, src_file5):
+            #     self.frame.append_log('----生成失败')
+            #     # 记录失败列表
+            #     failed_name_list.append(name + "_" + str(int(number)))
+            # else:
+            #     self.frame.append_log('----生成成功')
+            if not find_rename_file(audio_folder, dstFile, change_name):
                 self.frame.append_log('----生成失败')
                 # 记录失败列表
                 failed_name_list.append(name + "_" + str(int(number)))
             else:
                 self.frame.append_log('----生成成功')
+                chunk_suffix_audio(dstFile)
         print("失败列表：{0}".format(failed_name_list))
         self.frame.append_log_lines("失败列表：{0}".format(failed_name_list))
         self.frame.run_script_by_content(content_reset)
