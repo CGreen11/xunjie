@@ -13,11 +13,13 @@
 迅捷现在不愿意被白嫖，加上了声音水印，本着白嫖第一、科技第二的原则，增加音频剪切。后续要是像风云那样不充钱限制生成就没法了。
 注意：音频剪切 from pydub import AudioSegment，使用中会产生Error,见：https://york1996.blog.csdn.net/article/details/103649217 ， https://blog.csdn.net/zongza/article/details/85345223 ，后一个教程不知道有没有用，我先用的后一个教程解决了一部分问题，又用了第一个教程。
 
+# 后后记
+无聊看了看迅捷的程序，发现是js做的程序，从网络获取了一个1.30dd2096564d1ca988d91624615972191.js，其中有一行代码，s={text:c?l.substr(0,m.b.FILE_LIMITS.txtToVoiceTransfer)+"[1s]录音来源于迅捷文字转语音":l，如果通过拦截并替换使用本地篡改过的js有可能可以生成无声音水印的文件，但就此止步吧。
+
+
 # WINDOWS读取EXCEL批量模拟点击迅捷文字转语音生成语音文件（AutoRunner版本）
 
 使用：运行xunjie.bsh，调整相关参数、路径；
 备注：最早基于AutoRunner测试软件实现模拟点击迅捷生成文件并改名，过了一段时间准备用才发现AutoRunner要收费，之后发现通过搜索python 模拟点击发现KeymouseGo有实例，然后才进行了再次复刻
 ，但还是把AutoRunner版本上传备份，可惜了。
 
-<!--后后记  -->
-无聊看了看迅捷的程序，发现是js做的程序，从网络获取了一个1.30dd2096564d1ca988d91624615972191.js，其中有一行代码，s={text:c?l.substr(0,m.b.FILE_LIMITS.txtToVoiceTransfer)+"[1s]录音来源于迅捷文字转语音":l，如果通过拦截并替换使用本地篡改过的js有可能可以生成无声音水印的文件，但就此止步吧。
